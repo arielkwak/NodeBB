@@ -1,13 +1,22 @@
-import * as topics from '../topics';
-import * as user from '../user';
-import * as utils from '../utils';
+import topics = require('../topics');
+import user = require('../user');
+import utils = require('../utils');
 
 interface PostTS {
     getPostsFromSet: (set: string, start: number, stop: number, uid: number, reverse: boolean)=> Promise<any>;
+    isMain: (pids: number | number[]) => Promise<boolean | boolean[]>;
+    getTopicFields: (pid: number, fields: string[]) => Promise<any>;
+    generatePostPath: (pid: number, uid: number) => Promise<string | null>;
+    generatePostPaths: (pids: number[], uid: number) => Promise<string[]>;
+    getPidsFromSet: (set:string, start:number, stop:number, reverse:boolean) => Promise<number[]>;
+    getPostsByPids:(pids:number[], uid: number) => Promise<string[]>;
+    getPostsFields: (pids: number | number[], fields: string[]) => Promise<any>;
+    getPostField: (pid: number, field: string) => Promise<any>;
+    getPostIndices: (postData: any, uid: number) => Promise<any>;
 }
 
 //  eslint-disable-next-line @typescript-eslint/no-explicit-any
-export = function (Posts: any) {
+module.exports = function (Posts: PostTS) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     Posts.getPostsFromSet = async function (set: string, start: number, stop: number, uid: number, reverse: boolean) {
         const pids = await Posts.getPidsFromSet(set, start, stop, reverse);  // eslint-disable-line 
@@ -33,6 +42,7 @@ export = function (Posts: any) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
         return await topics.getTopicFields(tid, fields);
     };
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     Posts.generatePostPath = async function (pid: number, uid: number) {
         const paths = await Posts.generatePostPaths([pid], uid); // eslint-disable-line
